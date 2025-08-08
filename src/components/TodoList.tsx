@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Plus, Trash2, CheckCircle, Circle, Flag } from 'lucide-react'
-import { Todo } from '../types'
+import { Todo, Theme } from '../types'
 
 interface TodoListProps {
   todos: Todo[]
@@ -8,6 +8,7 @@ interface TodoListProps {
   onToggleTodo: (id: number) => void
   onDeleteTodo: (id: number) => void
   onUpdatePriority: (id: number, priority: 'low' | 'medium' | 'high') => void
+  theme: Theme
 }
 
 const TodoList: React.FC<TodoListProps> = ({
@@ -15,7 +16,8 @@ const TodoList: React.FC<TodoListProps> = ({
   onAddTodo,
   onToggleTodo,
   onDeleteTodo,
-  onUpdatePriority
+  onUpdatePriority,
+  theme
 }) => {
   const [newTodo, setNewTodo] = useState('')
 
@@ -49,18 +51,18 @@ const TodoList: React.FC<TodoListProps> = ({
   return (
     <div className="h-full flex flex-col">
       {/* 添加新待办 */}
-      <div className="p-4 border-b border-blue-400/20">
+      <div className={`p-4 border-b ${theme.border}`}>
         <form onSubmit={handleSubmit} className="flex space-x-2">
           <input
             type="text"
             value={newTodo}
             onChange={(e) => setNewTodo(e.target.value)}
             placeholder="添加新待办事项..."
-            className="flex-1 bg-white/10 text-white placeholder-white/50 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/20"
+            className="flex-1 bg-white/10 text-white placeholder-white/50 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/20 transition-all duration-200"
           />
           <button
             type="submit"
-            className="bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-lg transition-colors"
+            className="bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg"
           >
             <Plus size={16} />
           </button>
@@ -70,24 +72,27 @@ const TodoList: React.FC<TodoListProps> = ({
       {/* 待办列表 */}
       <div className="flex-1 overflow-y-auto p-4 space-y-2">
         {sortedTodos.length === 0 ? (
-          <div className="text-center text-white/50 py-8">
+          <div className="text-center text-white/50 py-8 animate-pulse">
             <div className="text-4xl mb-2">📝</div>
             <p>暂无待办事项</p>
             <p className="text-sm">添加一些任务开始你的高效工作吧！</p>
           </div>
         ) : (
-          sortedTodos.map((todo) => (
+          sortedTodos.map((todo, index) => (
             <div
               key={todo.id}
-              className={`bg-white/10 rounded-lg p-3 backdrop-blur-sm transition-all hover:bg-white/15 ${
+              className={`${theme.secondary} rounded-lg p-3 backdrop-blur-sm transition-all duration-200 hover:bg-white/15 hover:scale-105 hover:shadow-lg ${
                 todo.completed ? 'opacity-60' : ''
               }`}
+              style={{
+                animationDelay: `${index * 50}ms`
+              }}
             >
               <div className="flex items-start space-x-3">
                 {/* 完成状态 */}
                 <button
                   onClick={() => onToggleTodo(todo.id)}
-                  className="flex-shrink-0 mt-0.5"
+                  className="flex-shrink-0 mt-0.5 transition-all duration-200 hover:scale-110"
                 >
                   {todo.completed ? (
                     <CheckCircle size={20} className="text-green-400" />
@@ -108,7 +113,7 @@ const TodoList: React.FC<TodoListProps> = ({
                     </span>
                     <Flag 
                       size={14} 
-                      className={`${getPriorityColor(todo.priority)} cursor-pointer`}
+                      className={`${getPriorityColor(todo.priority)} cursor-pointer transition-all duration-200 hover:scale-110`}
                       onClick={() => {
                         const priorities: ('low' | 'medium' | 'high')[] = ['low', 'medium', 'high']
                         const currentIndex = priorities.indexOf(todo.priority)
@@ -132,7 +137,7 @@ const TodoList: React.FC<TodoListProps> = ({
                 {/* 删除按钮 */}
                 <button
                   onClick={() => onDeleteTodo(todo.id)}
-                  className="flex-shrink-0 text-white/50 hover:text-red-400 transition-colors"
+                  className="flex-shrink-0 text-white/50 hover:text-red-400 transition-all duration-200 hover:scale-110"
                 >
                   <Trash2 size={16} />
                 </button>
@@ -144,7 +149,7 @@ const TodoList: React.FC<TodoListProps> = ({
 
       {/* 统计信息 */}
       {todos.length > 0 && (
-        <div className="p-4 border-t border-blue-400/20">
+        <div className={`p-4 border-t ${theme.border}`}>
           <div className="flex justify-between text-sm text-white/70">
             <span>总计: {todos.length}</span>
             <span>已完成: {todos.filter(t => t.completed).length}</span>

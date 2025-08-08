@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { Play, Pause, RotateCcw } from 'lucide-react'
+import { Theme } from '../types'
 
-const Timer: React.FC = () => {
+interface TimerProps {
+  theme: Theme
+}
+
+const Timer: React.FC<TimerProps> = ({ theme }) => {
   const [time, setTime] = useState(25 * 60) // 25分钟
   const [isRunning, setIsRunning] = useState(false)
   const [mode, setMode] = useState<'pomodoro' | 'shortBreak' | 'longBreak'>('pomodoro')
@@ -59,16 +64,16 @@ const Timer: React.FC = () => {
   }
 
   return (
-    <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
+    <div className={`${theme.secondary} rounded-xl p-4 backdrop-blur-sm transition-all duration-200 hover:scale-105`}>
       {/* 模式切换 */}
       <div className="flex space-x-1 mb-4">
         {(['pomodoro', 'shortBreak', 'longBreak'] as const).map((timerMode) => (
           <button
             key={timerMode}
             onClick={() => switchMode(timerMode)}
-            className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
+            className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200 hover:scale-105 ${
               mode === timerMode
-                ? 'bg-white/20 text-white'
+                ? 'bg-white/20 text-white shadow-lg'
                 : 'text-white/70 hover:text-white hover:bg-white/10'
             }`}
           >
@@ -79,14 +84,14 @@ const Timer: React.FC = () => {
 
       {/* 时间显示 */}
       <div className="text-center mb-4">
-        <div className="text-4xl font-bold text-white mb-2">
+        <div className="text-4xl font-bold text-white mb-2 animate-pulse">
           {formatTime(time)}
         </div>
         
         {/* 进度条 */}
-        <div className="w-full bg-white/20 rounded-full h-2 mb-4">
+        <div className="w-full bg-white/20 rounded-full h-2 mb-4 overflow-hidden">
           <div
-            className="bg-white h-2 rounded-full transition-all duration-1000 ease-linear"
+            className="bg-white h-2 rounded-full transition-all duration-1000 ease-linear shadow-lg"
             style={{ width: `${getProgress()}%` }}
           />
         </div>
@@ -97,7 +102,7 @@ const Timer: React.FC = () => {
         {!isRunning ? (
           <button
             onClick={startTimer}
-            className="flex items-center space-x-2 bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors"
+            className="flex items-center space-x-2 bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg"
           >
             <Play size={16} />
             <span>开始</span>
@@ -105,7 +110,7 @@ const Timer: React.FC = () => {
         ) : (
           <button
             onClick={pauseTimer}
-            className="flex items-center space-x-2 bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors"
+            className="flex items-center space-x-2 bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg"
           >
             <Pause size={16} />
             <span>暂停</span>
@@ -114,7 +119,7 @@ const Timer: React.FC = () => {
         
         <button
           onClick={resetTimer}
-          className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-colors"
+          className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg"
         >
           <RotateCcw size={16} />
           <span>重置</span>

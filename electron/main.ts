@@ -36,9 +36,27 @@ function createWindow() {
 
   // 加载应用
   if (process.env.NODE_ENV === 'development') {
-    // 开发环境
-    mainWindow.loadURL('http://localhost:3000');
-    mainWindow.webContents.openDevTools();
+    // 开发环境 - 尝试多个端口
+    const tryPorts = async () => {
+      const ports = [3000, 3001, 3002, 3003, 3004, 3005];
+      
+      for (const port of ports) {
+        try {
+          await mainWindow!.loadURL(`http://localhost:${port}`);
+          console.log(`成功连接到端口 ${port}`);
+          mainWindow!.webContents.openDevTools();
+          return;
+        } catch (error) {
+          console.log(`端口 ${port} 不可用，尝试下一个...`);
+          continue;
+        }
+      }
+      
+      // 如果所有端口都失败，显示错误
+      console.error('无法连接到开发服务器，请确保 Vite 正在运行');
+    };
+    
+    tryPorts();
   } else {
     // 生产环境 - 加载构建后的文件
     mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
